@@ -1,0 +1,32 @@
+[
+    {
+        "id_index": "id146",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id146/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id146_prompt1.mp4",
+        "prompt": "The kayaker, in a waterproof jacket and helmet, paddled furiously through the rushing river, navigating around rocks and rapids, the sound of rushing water and the thrum of his paddles in the fast-moving stream accompanying his efforts."
+    },
+    {
+        "id_index": "id147",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id147/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id147_prompt1.mp4",
+        "prompt": "The gymnast, in a brightly colored leotard, flipped across the mat, landing in a perfect split as the crowd cheered, the gymnasium echoing with applause as the lights spotlighted her graceful movements."
+    },
+    {
+        "id_index": "id148",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id148/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id148_prompt1.mp4",
+        "prompt": "The actor, in costume and makeup, raced between different film sets, preparing for the next scene in the movie, the crew bustling around with equipment and lights, the sound of cameras rolling in the background."
+    },
+    {
+        "id_index": "id149",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id149/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id149_prompt1.mp4",
+        "prompt": "The runner, in a sports tank top and shorts, jumped over obstacles in the track and field event, quickly maneuvering through each hurdle, the crowd cheering from the stands, the sound of the athlete's rapid footsteps hitting the track reverberating in the stadium."
+    },
+    {
+        "id_index": "id150",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id150/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id150_prompt1.mp4",
+        "prompt": "The electrician, in a tool belt and gloves, moved from room to room, installing new wires and fixtures in the building, the hum of fluorescent lights and the occasional buzzing of the power tools providing a steady background noise as he worked diligently."
+    }
+]

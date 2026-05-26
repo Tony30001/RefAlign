@@ -1,0 +1,32 @@
+[
+    {
+        "id_index": "id021",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id021/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id021_prompt1.mp4",
+        "prompt": "The carpenter, in a plaid shirt and work boots, hurried between the workbench and the woodpile, measuring and cutting with skill, the scent of freshly cut wood filling the air, with sawdust floating through the beams of natural light streaming in from the window."
+    },
+    {
+        "id_index": "id022",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id022/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id022_prompt1.mp4",
+        "prompt": "The horse rider, in riding boots and a fitted jacket, galloped through the open field, her hair whipping in the wind as she urged her horse faster, the sound of hooves pounding on the soft earth mixing with the rustle of tall grass as the warm sun beat down on them."
+    },
+    {
+        "id_index": "id023",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id023/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id023_prompt1.mp4",
+        "prompt": "The football player, in a team uniform and helmet, sprinted across the field, leaping to catch the ball just inches from the ground, the stadium lights bright above him as his teammates cheered, the sound of the ball's impact and the crowd's reaction blending into a symphony of excitement."
+    },
+    {
+        "id_index": "id024",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id024/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id024_prompt1.mp4",
+        "prompt": "The swimmer, in a sleek swimsuit and swim cap, powered through the water, her strokes fast and rhythmic as she completed another lap, the water splashing around her as the sound of her breathing mingled with the quiet swish of her movements."
+    },
+    {
+        "id_index": "id025",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id025/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id025_prompt1.mp4",
+        "prompt": "The traveler, in light clothes and a wide-brimmed hat, moved from one exotic marketplace to the next, sampling food and bargaining for souvenirs, the air thick with the smell of spices and street food, the chatter of vendors and the vibrant colors of fabric and fruits everywhere."
+    }
+]

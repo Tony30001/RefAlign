@@ -1,0 +1,32 @@
+[
+    {
+        "id_index": "id071",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id071/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id071_prompt1.mp4",
+        "prompt": "The gymnast, in a sparkling leotard, stretched her body, performing a flawless backflip on the competition floor, the sound of her landing soft but strong as the audience erupted into applause, the mat beneath her absorbing the impact."
+    },
+    {
+        "id_index": "id072",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id072/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id072_prompt1.mp4",
+        "prompt": "The sculptor, in a simple shirt and jeans, carefully chiseled away at the marble, shaping the statue in the quiet studio, the rhythmic tapping of his mallet creating a meditative atmosphere as the stone dust swirled in the air around him."
+    },
+    {
+        "id_index": "id073",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id073/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id073_prompt1.mp4",
+        "prompt": "The hiker, in rugged boots and a backpack, carefully navigated the rocky trail, stopping occasionally to take in the breathtaking view, the air fresh with pine and the smell of earth, the sound of birds singing and wind rustling through the trees filling the silence."
+    },
+    {
+        "id_index": "id074",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id074/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id074_prompt1.mp4",
+        "prompt": "The basketball player, in a jersey and shorts, dribbled the ball expertly, making a sharp turn before taking a shot at the hoop, the crowd's cheers rising as he leaped into the air, the ball soaring toward the basket in a perfect arc."
+    },
+    {
+        "id_index": "id075",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id075/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id075_prompt1.mp4",
+        "prompt": "The diver, in a sleek wetsuit and flippers, gracefully executed a series of flips before entering the water with barely a splash, the bright blue water surrounding her as her body cut through the surface like a blade."
+    }
+]

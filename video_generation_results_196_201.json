@@ -1,0 +1,32 @@
+[
+    {
+        "id_index": "id196",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id196/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id196_prompt1.mp4",
+        "prompt": "The florist, in a simple dress, arranged the flowers in a vase, her hands working carefully to create a perfect bouquet, the sweet fragrance of the flowers mixing with the warm scent of fresh earth in the shop."
+    },
+    {
+        "id_index": "id197",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id197/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id197_prompt1.mp4",
+        "prompt": "The construction worker, in a safety vest and hard hat, used a crane to lift the steel beam, guiding it into place high above the building site, the sound of the machine whirring and the sharp clang of metal on metal filling the air as the city bustled below."
+    },
+    {
+        "id_index": "id198",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id198/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id198_prompt1.mp4",
+        "prompt": "The park ranger, in a green uniform and boots, walked along the trail, carrying a walking stick, his eyes scanning the forest for wildlife as the forest around him buzzed with the sounds of chirping birds, rustling leaves, and distant waterfalls."
+    },
+    {
+        "id_index": "id199",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id199/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id199_prompt1.mp4",
+        "prompt": "The journalist, in a tailored blazer and scarf, rushed through the crowded newsroom, clutching her notebook as the clatter of keyboards and the murmur of phone calls filled the air, the urgency of breaking news driving her toward the next big story."
+    },
+    {
+        "id_index": "id200",
+        "ref_img_path": "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/id200/image.png",
+        "video_path": "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos/id200_prompt1.mp4",
+        "prompt": "The zookeeper, in a khaki uniform and boots, carefully fed the animals in the exotic bird enclosure, the vibrant colors of the birds contrasting with the greenery of the habitat, the sound of squawking filling the air as the animals eagerly gathered around."
+    }
+]

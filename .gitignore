@@ -1,0 +1,14 @@
+__pycache__/
+checkpoints/
+dataset/
+models/
+logs/
+generated_videos/
+run_logs/
+*.mp4
+*.zip
+*.gz
+*.whl
+*.pt
+*.pth
+*.safetensors
