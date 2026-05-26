@@ -18,9 +18,8 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser(description="Batch Inference from JSON")
-# === 指定处理的 ID 区间 ===
-parser.add_argument("--start_id", type=int, default=None, help="起始 ID (包含)，例如 id001")
-parser.add_argument("--end_id", type=int, default=None, help="结束 ID (包含)，例如 id050")
+parser.add_argument("--start_id", type=int, default=0, help="起始索引 (包含)")
+parser.add_argument("--end_id", type=int, default=200, help="结束索引 (不包含)")
 args = parser.parse_args()
 
 @torch.inference_mode()
@@ -156,96 +155,67 @@ def make_blank_subject(width=832, height=480, rgb=127):
     # img = short_resize_and_crop_pil(img, width, height)
     return img
 
-# ===================== 1. 配置参数（你只需要修改这里的路径）=====================
-# 测试集根目录（id001~id200所在的文件夹）
-TEST_ROOT = "/home/zdmaogroup/tyj2/IP2V/vip200k_test_track_Facial/" 
-# 视频保存根目录
+# ===================== 1. 配置参数 =====================
+DATASET_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/data/IPVG2026-Test-Track1(3)/IPVG2026-Test-Track1"
+EVAL_JSON    = os.path.join(DATASET_ROOT, "eval.json")
+IMAGES_DIR   = os.path.join(DATASET_ROOT, "images")
 VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos"
-# 结果JSON保存路径
 RESULT_JSON_PATH = f"/home/zdmaogroup/tyj2/IP2V/RefAlign/video_generation_results_{args.start_id}_{args.end_id}.json"
 NEGATIVE_PROMPT = "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
 
-# 创建输出文件夹
 os.makedirs(VIDEO_SAVE_ROOT, exist_ok=True)
 
+# ===================== 2. 加载 eval.json =====================
+with open(EVAL_JSON, "r", encoding="utf-8") as f:
+    all_samples = json.load(f)
+
+samples = all_samples[args.start_id:args.end_id]
+print(f"处理样本：{args.start_id} ~ {args.end_id}，共 {len(samples)} 条")
 
 # ===================== 3. 批量处理主逻辑 =====================
-
-# 存储所有结果
 all_results = []
 
-# 遍历 id001 ~ id200
-for idx in tqdm(range(1, 201), desc="批量生成视频"):
-    if idx >= args.start_id and idx < args.end_id:
-      # 构造id名称：id001, id002...id200
-      id_index = f"id{idx:03d}"
-      id_folder = os.path.join(TEST_ROOT, id_index)
-      
-      # 检查文件夹是否存在
-      if not os.path.isdir(id_folder):
-          print(f"警告：{id_index} 文件夹不存在，跳过")
-          continue
-      
-      # ===================== 读取参考图片 =====================
-      img_path = os.path.join(id_folder, "image.png")
-      if not os.path.exists(img_path):
-          print(f"警告：{id_index} 无image.png，跳过")
-          continue
-      
-      blank1 = make_blank_subject(832, 480, 255)
-      blank1.save("blank_subject1.png")
-      subject_image = Image.open(img_path)
-      subject_image = short_resize_and_crop_pil(subject_image, 832,480)
-      subject_image = apply_subject_mask(birefnet, subject_image, device="cuda", bg_color=(255,255,255))
-      subject_image.save(os.path.join(id_folder, "subject_resize.png"))
-      
-      # ===================== 读取所有prompt文件 =====================
-      prompt_list = []
-      for p_idx in range(1, 2):  # prompt1~prompt5
-          prompt_file = os.path.join(id_folder, f"prompt{p_idx}.txt")
-          if os.path.exists(prompt_file):
-              with open(prompt_file, "r", encoding="utf-8") as f:
-                  prompt = f.read().strip()
-                  prompt_list.append(prompt)
-      
-      if not prompt_list:
-          print(f"警告：{id_index} 无prompt文件，跳过")
-          continue
-      
-      # ===================== 遍历每个prompt生成视频 =====================
-      for p_idx, prompt in enumerate(prompt_list, 1):
-          # 视频保存路径
-          video_name = f"{id_index}_prompt{p_idx}.mp4"
-          video_path = os.path.join(VIDEO_SAVE_ROOT, video_name)
-          
-          # ===================== 调用视频生成pipeline =====================
-          try:
-              video = pipe(
-                  prompt=prompt,
-                  negative_prompt=NEGATIVE_PROMPT,
-                  subject_image=[subject_image],
-                  seed=42,
-                  tiled=True,
-                  cfg_scale=5.0
-              )
-              
-              # 保存视频
-              save_video(video, video_path, fps=16, quality=9)
-              
-              # 构造结果字典
-              result = {
-                  "id_index": id_index,
-                  "ref_img_path": img_path,
-                  "video_path": video_path,
-                  "prompt": prompt
-              }
-              
-              all_results.append(result)
-          except Exception as e:
-              print(f"错误：{id_index} prompt{p_idx} 生成失败，原因：{str(e)}")
-              continue
-        
-# ===================== 保存所有结果到JSON =====================
+for sample in tqdm(samples, desc="批量生成视频"):
+    img_filename = os.path.basename(sample["img"])  # e.g. id001.webp
+    img_path = os.path.join(IMAGES_DIR, img_filename)
+    prompt = sample["prompt"]
+    id_index = os.path.splitext(img_filename)[0]    # e.g. id001
+
+    if not os.path.exists(img_path):
+        print(f"警告：{img_path} 不存在，跳过")
+        continue
+
+    # ===================== 读取并预处理参考图 =====================
+    subject_image = Image.open(img_path).convert("RGB")
+    subject_image = short_resize_and_crop_pil(subject_image, 832, 480)
+    subject_image = apply_subject_mask(birefnet, subject_image, device="cuda", bg_color=(255, 255, 255))
+
+    # ===================== 生成视频 =====================
+    video_name = f"{id_index}.mp4"
+    video_path = os.path.join(VIDEO_SAVE_ROOT, video_name)
+
+    try:
+        video = pipe(
+            prompt=prompt,
+            negative_prompt=NEGATIVE_PROMPT,
+            subject_image=[subject_image],
+            seed=42,
+            tiled=True,
+            cfg_scale=5.0
+        )
+        save_video(video, video_path, fps=16, quality=9)
+
+        all_results.append({
+            "id_index": id_index,
+            "ref_img_path": img_path,
+            "video_path": video_path,
+            "prompt": prompt
+        })
+    except Exception as e:
+        print(f"错误：{id_index} 生成失败，原因：{str(e)}")
+        continue
+
+# ===================== 4. 保存结果 JSON =====================
 with open(RESULT_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(all_results, f, ensure_ascii=False, indent=4)
 
