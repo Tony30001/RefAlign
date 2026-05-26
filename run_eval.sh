@@ -1,31 +1,37 @@
 #!/bin/bash
+#SBATCH --job-name=refalign_eval
+#SBATCH --partition=GPU-8A100
+#SBATCH --nodes=1
+#SBATCH --gres=gpu:8
+#SBATCH --cpus-per-task=64
+#SBATCH --output=run_logs/slurm_%j.log
+#SBATCH --error=run_logs/slurm_%j.err
 
-CONDA_ENV="refalign"
-eval "$(conda shell.bash hook)"
-conda activate $CONDA_ENV
-echo "conda: $CONDA_ENV"
+source ~/.bashrc
+conda activate refalign
 
-LOG_DIR="./run_logs"
-mkdir -p $LOG_DIR
+cd /home/zdmaogroup/tyj2/IP2V/RefAlign
+mkdir -p run_logs
+
 TASKS=(
- "0,0,25"
- "1,25,50"
- "2,50,75"
- "3,75,100"
- "4,100,125"
- "5,125,150"
- "6,150,175"
- "7,175,200"
+  "0,0,25"
+  "1,25,50"
+  "2,50,75"
+  "3,75,100"
+  "4,100,125"
+  "5,125,150"
+  "6,150,175"
+  "7,175,200"
 )
+
 for idx in "${!TASKS[@]}"; do
   IFS=',' read -r GPU start_idx end_idx <<< "${TASKS[$idx]}"
-  LOG_FILE="${LOG_DIR}/job_gpu${GPU}_start_idx${start_idx}_end_idx${end_idx}.log"
-
-  echo "GPU: $GPU | ��־: $LOG_FILE"
-  echo "start_idx=$start_idx end_idx=$end_idx"
- 
-  CUDA_VISIBLE_DEVICES=$GPU  python -u examples/wanvideo/model_inference/Wan2.1-T2V-14B_subject_eval.py --start_id $start_idx --end_id $end_idx > $LOG_FILE 2>&1 &
-
-  # ���1�룬����������ͻ
+  LOG_FILE="run_logs/job_gpu${GPU}_start_idx${start_idx}_end_idx${end_idx}.log"
+  echo "启动 GPU${GPU}: ${start_idx}~${end_idx}"
+  CUDA_VISIBLE_DEVICES=$GPU python -u examples/wanvideo/model_inference/Wan2.1-T2V-14B_subject_eval.py \
+    --start_id $start_idx --end_id $end_idx > $LOG_FILE 2>&1 &
   sleep 1
 done
+
+wait
+echo "所有任务完成"
