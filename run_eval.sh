@@ -33,7 +33,7 @@ for idx in "${!TASKS[@]}"; do
   IFS=',' read -r GPU start_idx end_idx <<< "${TASKS[$idx]}"
   LOG_FILE="run_logs/job_gpu${GPU}_start_idx${start_idx}_end_idx${end_idx}.log"
   echo "启动 GPU${GPU}: ${start_idx}~${end_idx}"
-  CUDA_VISIBLE_DEVICES=$GPU $PYTHON -u examples/wanvideo/model_inference/Wan2.1-T2V-14B_subject_2.py \
+  CUDA_VISIBLE_DEVICES=$GPU $PYTHON -u examples/wanvideo/model_inference/Wan2.1-T2V-14B_subject_eval.py \
     --start_id $start_idx --end_id $end_idx > $LOG_FILE 2>&1 &
   sleep 5
 done
