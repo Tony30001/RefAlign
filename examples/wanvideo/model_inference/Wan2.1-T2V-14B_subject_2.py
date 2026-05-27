@@ -12,15 +12,10 @@ from diffsynth.models.set_dual_LoRA import set_unsharedLoRA
 from transformers import AutoModelForImageSegmentation
 birefnet = AutoModelForImageSegmentation.from_pretrained('models/BiRefNet', trust_remote_code=True)
 from torchvision import transforms
-import os
-import json
-from tqdm import tqdm
-import argparse
-
-parser = argparse.ArgumentParser(description="Batch Inference from JSON")
-parser.add_argument("--start_id", type=int, default=0, help="起始索引 (包含)")
-parser.add_argument("--end_id", type=int, default=200, help="结束索引 (不包含)")
-args = parser.parse_args()
+import os 
+import json 
+from tqdm import tqdm 
+from PIL import Image
 
 @torch.inference_mode()
 def birefnet_mask_only(birefnet, pil_img: Image.Image, device="cuda:5", div=32):
@@ -83,7 +78,7 @@ def apply_subject_mask(
 
 
 pipe = WanVideoPipeline.from_pretrained(
-    torch_dtype=torch.bfloat16,
+    torch_dtype=torch.float16,
     device="cuda",
     # model_configs=[
     #     ModelConfig(model_id="Wan-AI/Wan2.1-T2V-1.3B", origin_file_pattern="diffusion_pytorch_model*.safetensors", offload_device="cpu"),
@@ -155,72 +150,49 @@ def make_blank_subject(width=832, height=480, rgb=127):
     # img = short_resize_and_crop_pil(img, width, height)
     return img
 
-# ===================== 1. 配置参数 =====================
-DATASET_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/data/IPVG2026-Test-Track1(3)/IPVG2026-Test-Track1"
-EVAL_JSON    = os.path.join(DATASET_ROOT, "eval.json")
-IMAGES_DIR   = os.path.join(DATASET_ROOT, "images")
-VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos"
-RESULT_JSON_PATH = f"/home/zdmaogroup/tyj2/IP2V/RefAlign/video_generation_results_{args.start_id}_{args.end_id}.json"
-NEGATIVE_PROMPT = "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
-
+DATASET_JSON = "/home/zdmaogroup/tyj2/IP2V/IPVG2026-Test-Track2/phantom_eval.json"
+VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/output/track2" 
+RESULT_JSON_PATH = ( f"/home/zdmaogroup/tyj2/IP2V/RefAlign/output/track2/" f"video_generation_results_{args.start_id}_{args.end_id}.json" )
 os.makedirs(VIDEO_SAVE_ROOT, exist_ok=True)
 
-# ===================== 2. 加载 eval.json =====================
-with open(EVAL_JSON, "r", encoding="utf-8") as f:
-    all_samples = json.load(f)
-
+with open(DATASET_JSON, "r", encoding="utf-8") as f: 
+  all_samples = json.load(f) 
 samples = all_samples[args.start_id:args.end_id]
-print(f"处理样本：{args.start_id} ~ {args.end_id}，共 {len(samples)} 条")
+print( f"{args.start_id} ~ {args.end_id}，" f"total: {len(samples)} " )
 
-# ===================== 3. 批量处理主逻辑 =====================
-all_results = []
+for idx, sample in enumerate( tqdm(samples, desc="generate videos") ):
+  prompt = sample["prompt"]
+  img_paths = sample["img"].split(",")
+  subject_images = []
+  for img_path in img_paths: 
+    img_path = img_path.strip() 
+    if not os.path.exists(img_path): 
+      print(f"warning：{img_path} doesn't exit, skip") 
+      continue 
+    subject_image = Image.open(img_path)
+    subject_image = short_resize_and_crop_pil( subject_image, 1280, 720 ) 
+    subject_image = apply_subject_mask( birefnet, subject_image, device="cuda", bg_color=(255, 255, 255) ) 
+    subject_images.append(subject_image)
+    
+  video_name = f"{ args.start_id + idx }.mp4"
+  video_path = os.path.join( VIDEO_SAVE_ROOT, video_name )
+  
+  video = pipe(
+      prompt=prompt,
+      negative_prompt='split-screen, multi-panel, collage, picture-in-picture, two scenes, multiple scenes, montage,duplicated subject, twin, clone, double subject, two people, extra person, extra body, multiple bodies,identity drift, face swap, wrong face, inconsistent face, inconsistent clothing, outfit change, age change, gender change,cutout, sticker, pasted, floating subject, halo, outline, edge artifacts, green screen, unnatural boundary,bad composition, off-center subject, cropped head, cropped body, out of frame,temporal flicker, frame-to-frame inconsistency, jitter, wobble, warping, melting, morphing, swimming textures,ghosting, motion smear, shimmering, crawling artifacts,text, subtitles, watermark, logo, caption,overexposure, oversaturated, lowres, blurry, jpeg artifacts, noisy, banding,bad anatomy, deformed body, disfigured face, extra fingers, fused fingers, missing fingers, malformed hands,messy background, crowded background, too many background people',
+  #    negative_prompt="色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+      subject_image=subject_images,
+      seed=42, tiled=True,
+      cfg_scale=5.0,
+      height=720,
+      width=1280,
+      num_frames=81
+  )
+  save_video(video, video_path, fps=16, quality=9)
+  all_results.append({ "id_index": f"{ args.start_id + idx }", "ref_img_path": img_paths, "video_path": video_path, "prompt": prompt })
 
-for sample in tqdm(samples, desc="批量生成视频"):
-    img_filename = os.path.basename(sample["img"])  # e.g. id001.webp
-    img_path = os.path.join(IMAGES_DIR, img_filename)
-    prompt = sample["prompt"]
-    id_index = os.path.splitext(img_filename)[0]    # e.g. id001
-
-    if not os.path.exists(img_path):
-        print(f"警告：{img_path} 不存在，跳过")
-        continue
-
-    # ===================== 读取并预处理参考图 =====================
-    subject_image = Image.open(img_path).convert("RGB")
-    subject_image = short_resize_and_crop_pil(subject_image, 720, 1280)
-    subject_image = apply_subject_mask(birefnet, subject_image, device="cuda", bg_color=(255, 255, 255))
-
-    # ===================== 生成视频 =====================
-    video_name = f"{id_index}.mp4"
-    video_path = os.path.join(VIDEO_SAVE_ROOT, video_name)
-
-    try:
-        video = pipe(
-            prompt=prompt,
-            negative_prompt=NEGATIVE_PROMPT,
-            subject_image=[subject_image],
-            num_frames=81,
-            height=1280,
-            width=720,
-            seed=42,
-            tiled=True,
-            cfg_scale=5.0
-        )
-        save_video(video, video_path, fps=16, quality=9)
-
-        all_results.append({
-            "id_index": id_index,
-            "ref_img_path": img_path,
-            "video_path": video_path,
-            "prompt": prompt
-        })
-    except Exception as e:
-        print(f"错误：{id_index} 生成失败，原因：{str(e)}")
-        continue
-
-# ===================== 4. 保存结果 JSON =====================
-with open(RESULT_JSON_PATH, "w", encoding="utf-8") as f:
-    json.dump(all_results, f, ensure_ascii=False, indent=4)
-
-print(f"\n处理完成！共生成 {len(all_results)} 个视频")
-print(f"结果已保存至：{RESULT_JSON_PATH}")
+with open( RESULT_JSON_PATH, "w", encoding="utf-8" ) as f: 
+  json.dump( all_results, f, ensure_ascii=False, indent=4 )
+  
+print(f"\nFinished！total {len(all_results)} videos") 
+print(f"saved：{RESULT_JSON_PATH}")
