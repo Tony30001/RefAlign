@@ -127,7 +127,7 @@ selected_keys = [k for k in keys if args.start_id < int(k) <= args.end_id]
 print(f"处理范围：{args.start_id} ~ {args.end_id}，共 {len(selected_keys)} 条")
 
 # ===================== 批量推理 =====================
-all_results = []
+all_results = {}
 
 for key in tqdm(selected_keys, desc="generate videos"):
     sample = all_samples[key]
@@ -171,12 +171,14 @@ for key in tqdm(selected_keys, desc="generate videos"):
             num_frames=81,
         )
         save_video(video, video_path, fps=16, quality=9)
-        all_results.append({
-            "id_index": video_id,
-            "ref_img_paths": sample["img_paths"],
-            "video_path": video_path,
-            "prompt": prompt,
-        })
+        # 输出格式与标准格式一致：保留原始字段，追加 video_path
+        all_results[key] = {
+            "img_paths":        sample["img_paths"],
+            "class_label":      sample.get("class_label", []),
+            "global_prompt":    sample["global_prompt"],
+            "temporal_captions": sample.get("temporal_captions", []),
+            "video_path":       video_path,
+        }
     except Exception as e:
         print(f"error: {video_id} failed — {e}")
         continue
