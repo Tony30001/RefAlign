@@ -12,10 +12,16 @@ from diffsynth.models.set_dual_LoRA import set_unsharedLoRA
 from transformers import AutoModelForImageSegmentation
 birefnet = AutoModelForImageSegmentation.from_pretrained('models/BiRefNet', trust_remote_code=True)
 from torchvision import transforms
-import os 
-import json 
-from tqdm import tqdm 
+import os
+import json
+from tqdm import tqdm
 from PIL import Image
+import argparse
+
+parser = argparse.ArgumentParser(description="Track2 Batch Inference")
+parser.add_argument("--start_id", type=int, default=0, help="起始索引 (包含)")
+parser.add_argument("--end_id", type=int, default=200, help="结束索引 (不包含)")
+args = parser.parse_args()
 
 @torch.inference_mode()
 def birefnet_mask_only(birefnet, pil_img: Image.Image, device="cuda:5", div=32):
@@ -155,9 +161,10 @@ VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/output/track2"
 RESULT_JSON_PATH = ( f"/home/zdmaogroup/tyj2/IP2V/RefAlign/output/track2/" f"video_generation_results_{args.start_id}_{args.end_id}.json" )
 os.makedirs(VIDEO_SAVE_ROOT, exist_ok=True)
 
-with open(DATASET_JSON, "r", encoding="utf-8") as f: 
-  all_samples = json.load(f) 
+with open(DATASET_JSON, "r", encoding="utf-8") as f:
+  all_samples = json.load(f)
 samples = all_samples[args.start_id:args.end_id]
+all_results = []
 print( f"{args.start_id} ~ {args.end_id}，" f"total: {len(samples)} " )
 
 for idx, sample in enumerate( tqdm(samples, desc="generate videos") ):
@@ -195,4 +202,4 @@ with open( RESULT_JSON_PATH, "w", encoding="utf-8" ) as f:
   json.dump( all_results, f, ensure_ascii=False, indent=4 )
   
 print(f"\nFinished！total {len(all_results)} videos") 
-print(f"saved：{RESULT_JSON_PATH}")
+print(f"saved：{RESULT_JSON_PATH}"))
