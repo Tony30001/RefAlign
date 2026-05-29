@@ -159,8 +159,8 @@ def make_blank_subject(width=832, height=480, rgb=127):
 DATASET_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/data/IPVG2026-Test-Track1(3)/IPVG2026-Test-Track1"
 EVAL_JSON    = os.path.join(DATASET_ROOT, "eval.json")
 IMAGES_DIR   = os.path.join(DATASET_ROOT, "images")
-VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos"
-RESULT_JSON_PATH = f"/home/zdmaogroup/tyj2/IP2V/RefAlign/video_generation_results_{args.start_id}_{args.end_id}.json"
+VIDEO_SAVE_ROOT = "/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos_track1_1280x720"
+RESULT_JSON_PATH = f"/home/zdmaogroup/tyj2/IP2V/RefAlign/generated_videos_track1_1280x720/results_{args.start_id}_{args.end_id}.json"
 NEGATIVE_PROMPT = "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
 
 os.makedirs(VIDEO_SAVE_ROOT, exist_ok=True)
@@ -187,7 +187,7 @@ for sample in tqdm(samples, desc="批量生成视频"):
 
     # ===================== 读取并预处理参考图 =====================
     subject_image = Image.open(img_path).convert("RGB")
-    subject_image = short_resize_and_crop_pil(subject_image, 832, 480)
+    subject_image = short_resize_and_crop_pil(subject_image, 1280, 720)
     subject_image = apply_subject_mask(birefnet, subject_image, device="cuda", bg_color=(255, 255, 255))
 
     # ===================== 生成视频 =====================
@@ -199,6 +199,9 @@ for sample in tqdm(samples, desc="批量生成视频"):
             prompt=prompt,
             negative_prompt=NEGATIVE_PROMPT,
             subject_image=[subject_image],
+            num_frames=81,
+            height=720,
+            width=1280,
             seed=42,
             tiled=True,
             cfg_scale=5.0
